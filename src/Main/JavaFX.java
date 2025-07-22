@@ -18,7 +18,8 @@ public class JavaFX extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/Views/Cart.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/market.fxml"));
+        Parent root = loader.load();
         
         Scene scene = new Scene(root);
         
