@@ -16,16 +16,12 @@ import javafx.stage.Stage;
  */
 public class JavaFX extends Application {
     
-    @Override
-    public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/market.fxml"));
-        Parent root = loader.load();
-        
-        Scene scene = new Scene(root);
-        
-        stage.setTitle("Giỏ hàng");
-        stage.setScene(scene);
-        stage.show();
+   @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("/Views/Login.fxml"));
+        primaryStage.setTitle("Login");
+        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.show();
     }
 
     /**
