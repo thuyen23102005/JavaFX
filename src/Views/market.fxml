@@ -80,7 +80,7 @@
                         </HBox>
                         <ImageView fitHeight="170.0" fitWidth="285.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../img/orange.png" />
+                              <Image url="@../Images/orange.png" />
                            </image>
                         </ImageView>
                         <HBox alignment="CENTER" prefHeight="44.0" prefWidth="335.0">
