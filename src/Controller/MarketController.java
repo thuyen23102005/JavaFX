@@ -1,47 +1,60 @@
 package Controller;
 
 import java.io.IOException;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.stage.Modality;
+import model.Product;
+import java.util.*;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MarketController {
     @FXML private FlowPane productContainer;
-    @FXML private TableView<?> cartTable;
-    @FXML private TableColumn<?, ?> colCartName;
-    @FXML private TableColumn<?, ?> colCartQty;
-    @FXML private TableColumn<?, ?> colCartPrice;
-    @FXML private Label lblTotal;
-
+    
     @FXML
-    private void onRegister() {
-        System.out.println("Chuyển đến form đăng ký");
+    private void initialize() {
+        loadProducts();
     }
+
+    private void loadProducts() {
+    List<Product> products = Arrays.asList(
+        new Product(1, "Trà sữa", "Ngon", 1, 25000, "/images/watermelon.png"),
+        new Product(2, "Bánh ngọt", "Thơm", 1, 15000, "/images/orange.png"),
+        new Product(3, "Cà phê", "Đậm đà", 1, 20000, "/images/kiwi.png")
+    );
+
+    for (Product p : products) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductItem.fxml"));
+            Parent card = loader.load();
+            ProductItemController ctrl = loader.getController();
+            ctrl.setData(p);
+            productContainer.getChildren().add(card);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+    @FXML
+    private Button btnLogin;
 
     @FXML
     private void onLogin() {
-      try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Login.fxml"));
-        Parent loginRoot = loader.load();
-
-        Stage loginStage = new Stage();
-        loginStage.setTitle("Đăng nhập");
-        loginStage.setScene(new Scene(loginRoot));
-        loginStage.setResizable(false);
-
-        // Chặn tương tác cửa sổ chính nếu muốn
-        loginStage.initModality(Modality.APPLICATION_MODAL); 
-
-        loginStage.showAndWait(); // chờ đến khi login đóng
-    } catch (IOException e) {
+        try {
+          Parent root = FXMLLoader.load(getClass().getResource("/Views/Login.fxml"));
+          Stage stage = (Stage) btnLogin.getScene().getWindow(); // dùng btnLogin để lấy Stage hiện tại
+          stage.setScene(new Scene(root));
+          stage.setTitle("Đăng nhập");
+          stage.show();
+       } catch (IOException e) {
         e.printStackTrace();
+       }
     }
-  }
+
     @FXML
     private void onCheckout() {
         System.out.println("Xử lý thanh toán");

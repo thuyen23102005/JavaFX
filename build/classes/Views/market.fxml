@@ -16,9 +16,9 @@
             <padding><Insets top="20" left="10" right="10" bottom="10"/></padding>
             <Label text="🛒 Market" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
             <Label text="Welcome, Admin111" style="-fx-text-fill: white;"/>
-            <Button text="Giỏ hàng" prefWidth="140"/>
             <Button text="Danh sách sản phẩm" prefWidth="140"/>
             <Button text="Xoá" prefWidth="140"/>
+            <Button text="Đăng Xuất" onAction="#onLogin" prefWidth="140"/>
         </VBox>
     </left>
 
@@ -35,10 +35,6 @@
 
             <!-- Giỏ hàng -->
             <VBox spacing="10" prefWidth="300">
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button fx:id="btnRegister" text="Đăng ký" onAction="#onRegister"/>
-                    <Button fx:id="btnLogin" text="Đăng nhập" onAction="#onLogin"/>
-                </HBox>
                 <Label text="🛒 Giỏ hàng" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
                 <TableView fx:id="cartTable" prefHeight="300">
                     <columns>
