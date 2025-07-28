@@ -27,14 +27,26 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import javafx.stage.FileChooser;
+import java.io.File;
+
 import model.Product;
 import Main.Myconnection;
+import javafx.scene.image.ImageView;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 public class ProductController implements Initializable {
     @FXML private TextField txtNamePro, txtDescription, txtCateID, txtPrice, txtImage;
     @FXML private TableView<Product> tableProduct;
     @FXML private TableColumn<Product, Integer> colID;
-    @FXML private TableColumn<Product, String> colName, colDesc, colImage;
+    @FXML private TableColumn<Product, String> colName, colDesc;
+    @FXML private TableColumn<Product, ImageView> colImage;
     @FXML private TableColumn<Product, Integer> colCate;
     @FXML private TableColumn<Product, Double> colPrice;
 
@@ -47,8 +59,8 @@ public class ProductController implements Initializable {
         colDesc.setCellValueFactory(new PropertyValueFactory<>("decriptionPro"));
         colCate.setCellValueFactory(new PropertyValueFactory<>("cateID"));
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-        colImage.setCellValueFactory(new PropertyValueFactory<>("imagePro"));
-
+        colImage.setCellValueFactory(cellData -> new javafx.beans.property.ReadOnlyObjectWrapper<>(cellData.getValue().getImageView()));
+        
         loadProducts();
     }
 
@@ -71,7 +83,8 @@ public class ProductController implements Initializable {
         tableProduct.setItems(listProduct);
     }
 
-    @FXML private void handleAdd() {
+    @FXML 
+    private void handleAdd() {
         String sql = "INSERT INTO Product(NamePro, DecriptionPro, CateID, Price, ImagePro) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = Myconnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -86,7 +99,8 @@ public class ProductController implements Initializable {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML private void handleUpdate() {
+    @FXML 
+    private void handleUpdate() {
         Product selected = tableProduct.getSelectionModel().getSelectedItem();
         if (selected == null) return;
         String sql = "UPDATE Product SET NamePro=?, DecriptionPro=?, CateID=?, Price=?, ImagePro=? WHERE ProductID=?";
@@ -104,7 +118,8 @@ public class ProductController implements Initializable {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML private void handleDelete() {
+    @FXML 
+    private void handleDelete() {
         Product selected = tableProduct.getSelectionModel().getSelectedItem();
         if (selected == null) return;
         String sql = "DELETE FROM Product WHERE ProductID=?";
@@ -117,8 +132,38 @@ public class ProductController implements Initializable {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML private void handleClear() {
+    @FXML 
+    private void handleClear() {
         txtNamePro.clear(); txtDescription.clear(); txtCateID.clear();
         txtPrice.clear(); txtImage.clear();
+    }
+    
+    @FXML
+    private void handleBrowseImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn ảnh sản phẩm");
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Ảnh (*.png, *.jpg, *.jpeg)", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File selectedFile = fileChooser.showOpenDialog(null);
+    if (selectedFile == null) return;
+
+    try {
+        // Tạo thư mục images nếu chưa có
+        Path destDir = Paths.get("Images");
+        Files.createDirectories(destDir);
+
+        // Copy file vào thư mục Images
+        Path src  = selectedFile.toPath();
+        Path dest = destDir.resolve(selectedFile.getName());
+        Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+
+        // Lưu đường dẫn tuyệt đối (hoặc tương đối tuỳ bạn muốn)
+        txtImage.setText(dest.toAbsolutePath().toString());
+
+        } catch (Exception ex) {
+           ex.printStackTrace();
+        }
     }
 }

@@ -17,7 +17,7 @@
             <Label text="🛒 Market" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
             <Label text="Welcome, Admin111" style="-fx-text-fill: white;"/>
             <Button text="Danh sách sản phẩm" prefWidth="140"/>
-            <Button text="Xoá" prefWidth="140"/>
+            <Button text="Thông Tin Cá Nhân" prefWidth="140"/>
             <Button text="Đăng Xuất" onAction="#onLogin" prefWidth="140"/>
         </VBox>
     </left>
@@ -46,7 +46,6 @@
                 <Label fx:id="lblTotal" text="Tổng tiền: ₫0" style="-fx-font-size: 16px;"/>
                 <Button text="Thanh toán" onAction="#onCheckout" prefWidth="260" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
                 <HBox spacing="10">
-                    <Button text="In hóa đơn" onAction="#onPrint"/>
                     <Button text="Xoá" onAction="#onClearCart"/>
                 </HBox>
             </VBox>

@@ -12,9 +12,9 @@ import java.sql.*;
 public class Myconnection {
     public static Connection getConnection() {
         try {
-            String url = "jdbc:mysql://localhost:3306/QLDB";
+            String url = "jdbc:mysql://localhost:3306/STORE";
             String user = "root"; // thay đổi nếu khác
-            String pass = "123";     // nhập password MySQL nếu có
+            String pass = "123456";     // nhập password MySQL nếu có
             return DriverManager.getConnection(url, user, pass);
         } catch (SQLException ex) {
             ex.printStackTrace();
