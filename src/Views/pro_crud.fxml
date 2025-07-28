@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane fx:controller="Controller.ProductController" xmlns:fx="http://javafx.com/fxml">
+    <VBox spacing="10">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+
+        <TextField fx:id="txtNamePro" promptText="Tên sản phẩm"/>
+        <TextField fx:id="txtDescription" promptText="Mô tả"/>
+        <TextField fx:id="txtCateID" promptText="Mã loại"/>
+        <TextField fx:id="txtPrice" promptText="Giá"/>
+        <TextField fx:id="txtImage" promptText="Ảnh"/>
+
+        <HBox spacing="10">
+            <Button text="Thêm" onAction="#handleAdd"/>
+            <Button text="Sửa" onAction="#handleUpdate"/>
+            <Button text="Xóa" onAction="#handleDelete"/>
+            <Button text="Làm mới" onAction="#handleClear"/>
+        </HBox>
+
+        <TableView fx:id="tableProduct">
+            <columns>
+                <TableColumn text="ID" fx:id="colID"/>
+                <TableColumn text="Tên" fx:id="colName"/>
+                <TableColumn text="Mô tả" fx:id="colDesc"/>
+                <TableColumn text="Loại" fx:id="colCate"/>
+                <TableColumn text="Giá" fx:id="colPrice"/>
+                <TableColumn text="Ảnh" fx:id="colImage"/>
+            </columns>
+        </TableView>
+    </VBox>
+</AnchorPane>

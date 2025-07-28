@@ -14,7 +14,7 @@ public class Myconnection {
         try {
             String url = "jdbc:mysql://localhost:3306/QLDB";
             String user = "root"; // thay đổi nếu khác
-            String pass = "";     // nhập password MySQL nếu có
+            String pass = "123";     // nhập password MySQL nếu có
             return DriverManager.getConnection(url, user, pass);
         } catch (SQLException ex) {
             ex.printStackTrace();
