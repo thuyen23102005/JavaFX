@@ -8,8 +8,12 @@
             <file>file:/D:/Java/JavaFX/src/Controller/LoginController.java</file>
             <file>file:/D:/Java/JavaFX/src/values/style.css</file>
             <file>file:/D:/Java/JavaFX/src/Controller/MarketController.java</file>
-            <file>file:/D:/Java/JavaFX/src/Controller/CartController.java</file>
             <file>file:/D:/Java/JavaFX/src/Views/market.fxml</file>
+            <file>file:/D:/Java/JavaFX/src/Main/Myconnection.java</file>
+            <file>file:/D:/Java/JavaFX/src/model/Product.java</file>
+            <file>file:/D:/Java/JavaFX/src/Views/pro_crud.fxml</file>
+            <file>file:/D:/Java/JavaFX/src/Controller/ProductController.java</file>
+            <file>file:/D:/Java/JavaFX/src/Controller/ProductItemController.java</file>
         </group>
     </open-files>
 </project-private>
