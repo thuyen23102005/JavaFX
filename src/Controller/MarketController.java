@@ -11,7 +11,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MarketController {
-
     @FXML private FlowPane productContainer;
     @FXML private TableView<?> cartTable;
     @FXML private TableColumn<?, ?> colCartName;
