@@ -1,26 +1,73 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package Controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-import javafx.fxml.Initializable;
+import java.io.IOException;
+import java.util.List;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
+import model.Product;
+import java.util.*;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-/**
- * FXML Controller class
- *
- * @author thuyen
- */
-public class MarketController implements Initializable {
+public class MarketController {
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
+    @FXML private FlowPane productContainer;
     
+    @FXML
+    private void initialize() {
+        loadProducts();
+    }
+
+    private void loadProducts() {
+    List<Product> products = Arrays.asList(
+        new Product(1, "Trà sữa", "Ngon", 1, 25000, "/images/watermelon.png"),
+        new Product(2, "Bánh ngọt", "Thơm", 1, 15000, "/images/orange.png"),
+        new Product(3, "Cà phê", "Đậm đà", 1, 20000, "/images/kiwi.png")
+    );
+
+    for (Product p : products) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductItem.fxml"));
+            Parent card = loader.load();
+            ProductItemController ctrl = loader.getController();
+            ctrl.setData(p);
+            productContainer.getChildren().add(card);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+    @FXML
+    private Button btnLogin;
+
+    @FXML
+    private void onLogin() {
+        try {
+          Parent root = FXMLLoader.load(getClass().getResource("/Views/Login.fxml"));
+          Stage stage = (Stage) btnLogin.getScene().getWindow(); // dùng btnLogin để lấy Stage hiện tại
+          stage.setScene(new Scene(root));
+          stage.setTitle("Đăng nhập");
+          stage.show();
+       } catch (IOException e) {
+        e.printStackTrace();
+       }
+    }
+
+    @FXML
+    private void onCheckout() {
+        System.out.println("Xử lý thanh toán");
+    }
+
+    @FXML
+    private void onClearCart() {
+        System.out.println("Xoá toàn bộ giỏ hàng");
+    }
+
+    @FXML
+    private void onPrint() {
+        System.out.println("In hóa đơn");
+    }
 }

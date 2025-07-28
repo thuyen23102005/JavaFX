@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXML.java to edit this template
- */
 package Main;
 
 import javafx.application.Application;
@@ -18,9 +14,11 @@ public class JavaFX extends Application {
     
    @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/Views/Login.fxml"));
-        primaryStage.setTitle("Login");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Market.fxml"));
+        Parent root = loader.load();
+        
+        primaryStage.setTitle("market");
+        primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.show();
     }
 

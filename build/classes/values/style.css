@@ -23,6 +23,7 @@
 .chosen-fruit-card {
     -fx-background-color: #42d5e9;
     -fx-background-radius: 30;
+    color: white;
 }
 
 .comboBox {
