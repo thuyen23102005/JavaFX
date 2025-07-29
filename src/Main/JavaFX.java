@@ -14,11 +14,11 @@ public class JavaFX extends Application {
     
    @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/pro_crud.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Signin.fxml"));
         Parent root = loader.load();
         
         primaryStage.setTitle("market");
-        primaryStage.setScene(new Scene(root, 1000, 600));
+        primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }
 

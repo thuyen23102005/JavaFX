@@ -12,32 +12,63 @@ import java.util.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import Main.Myconnection;
+
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
+import model.CartItem;
 
 public class MarketController {
     @FXML private FlowPane productContainer;
     
+    @FXML private TableView<CartItem> tableCart;
+    @FXML private TableColumn<CartItem, String> colCartName;
+    @FXML private TableColumn<CartItem, Integer> colCartQty;
+    @FXML private TableColumn<CartItem, Double> colCartTotal;
+    @FXML private Label lblTotal;
+
+    private ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
+    
     @FXML
     private void initialize() {
         loadProducts();
+        colCartName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getProduct().getNamePro()));
+        colCartQty.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getQuantity()).asObject());
+        colCartTotal.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getTotal()).asObject());
+        tableCart.setItems(cartItems);
     }
 
     private void loadProducts() {
-    List<Product> products = Arrays.asList(
-        new Product(1, "Trà sữa", "Ngon", 1, 25000, "/images/watermelon.png"),
-        new Product(2, "Bánh ngọt", "Thơm", 1, 15000, "/images/orange.png"),
-        new Product(3, "Cà phê", "Đậm đà", 1, 20000, "/images/kiwi.png")
-    );
+    try (Connection conn = Myconnection.getConnection()) {
+        String sql = "SELECT * FROM Product";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
 
-    for (Product p : products) {
-        try {
+        while (rs.next()) {
+            Product p = new Product(
+                rs.getInt("ProductID"),
+                rs.getString("NamePro"),
+                rs.getString("DecriptionPro"),
+                rs.getInt("CateID"),
+                rs.getDouble("Price"),
+                rs.getString("ImagePro") // giả sử chứa đường dẫn file ảnh, ví dụ: "images/abc.jpg"
+            );
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductItem.fxml"));
             Parent card = loader.load();
             ProductItemController ctrl = loader.getController();
-            ctrl.setData(p);
+            ctrl.setData(p, this);
             productContainer.getChildren().add(card);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
 }
     @FXML
@@ -58,16 +89,66 @@ public class MarketController {
 
     @FXML
     private void onCheckout() {
-        System.out.println("Xử lý thanh toán");
+        double total = 0;
+    for (CartItem item : cartItems) {
+        total += item.getTotal();
+    }
+
+    if (cartItems.isEmpty()) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Cảnh báo");
+        alert.setHeaderText(null);
+        alert.setContentText("Giỏ hàng đang trống. Không thể thanh toán.");
+        alert.getDialogPane().setStyle("-fx-font-size: 18px; -fx-font-family: 'Arial';");
+        alert.showAndWait();
+        return;
+    }
+
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle("Thanh toán thành công");
+    alert.setHeaderText(null); // Ẩn dòng phân cách
+
+    alert.setContentText(String.format("Cảm ơn bạn đã mua hàng!\nBạn đã thanh toán: %.0f ₫", total));
+    alert.getDialogPane().setStyle("-fx-font-size: 18px; -fx-font-family: 'Arial';");
+
+    alert.showAndWait();
+    cartItems.clear();
+    updateTotal();
     }
 
     @FXML
     private void onClearCart() {
-        System.out.println("Xoá toàn bộ giỏ hàng");
+        CartItem selected = tableCart.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+        cartItems.remove(selected);
+        updateTotal(); // cập nhật lại tổng tiền sau khi xóa
+        } else {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Cảnh báo");
+        alert.setHeaderText(null);
+        alert.setContentText("Vui lòng chọn sản phẩm cần xóa trong giỏ hàng!");
+        alert.showAndWait();
+        }
     }
+    
+    public void addToCart(Product product, int quantity) {
+    for (CartItem item : cartItems) {
+        if (item.getProduct().getProductID() == product.getProductID()) {
+            int newQty = item.getQuantity() + quantity;
+            cartItems.set(cartItems.indexOf(item), new CartItem(product, newQty));
+            updateTotal();
+            return;
+        }
+    }
+    cartItems.add(new CartItem(product, quantity));
+    updateTotal();
+  }
 
-    @FXML
-    private void onPrint() {
-        System.out.println("In hóa đơn");
+    private void updateTotal() {
+    double total = 0;
+    for (CartItem item : cartItems) {
+        total += item.getTotal();
     }
+    lblTotal.setText(String.format("Tổng tiền: %.0f ₫", total));
+  }
 }

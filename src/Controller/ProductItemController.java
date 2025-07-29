@@ -15,26 +15,46 @@ public class ProductItemController {
     @FXML private Spinner<Integer> spinnerQty;
 
     private Product product;
+    private MarketController marketController;
 
-    public void setData(Product product) {
-        this.product = product;
+    public void setData(Product product, MarketController controller) {
+    this.product = product;
+    this.marketController = controller;
 
-        lblName.setText(product.getNamePro());
-        lblPrice.setText(String.format("%.0f ₫", product.getPrice()));
+    lblName.setText(product.getNamePro());
+    lblPrice.setText(String.format("%.0f ₫", product.getPrice()));
 
-        if (product.getImagePro() != null && !product.getImagePro().isEmpty()) {
-            Image image = new Image(getClass().getResourceAsStream(product.getImagePro()));
-            imgProduct.setImage(image);
+    try {
+        String imagePath = product.getImagePro();
+        Image image;
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            if (imagePath.startsWith("/") || imagePath.contains("images")) {
+                image = new Image(getClass().getResourceAsStream(imagePath));
+            } else {
+                image = new Image("file:" + imagePath);
+            }
+        } else {
+            image = new Image(getClass().getResourceAsStream("/images/default.png"));
         }
 
-        SpinnerValueFactory<Integer> valueFactory =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 1);
-        spinnerQty.setValueFactory(valueFactory);
+        imgProduct.setImage(image);
+    } catch (Exception e) {
+        System.err.println("Không thể tải ảnh: " + product.getImagePro());
+        e.printStackTrace();
+        imgProduct.setImage(new Image(getClass().getResourceAsStream("/images/default.png")));
     }
+
+    SpinnerValueFactory<Integer> valueFactory =
+            new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 1);
+    spinnerQty.setValueFactory(valueFactory);
+}
 
     @FXML
     private void handleAdd() {
         int qty = spinnerQty.getValue();
-        System.out.println("Đã thêm vào giỏ: " + product.getNamePro() + " x" + qty);
+        if (marketController != null) {
+        marketController.addToCart(product, qty);
+        }
     }
 }

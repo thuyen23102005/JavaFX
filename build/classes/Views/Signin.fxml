@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:controller="Controller.SigninController"
+            prefHeight="400.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- Bên trái: hình ảnh -->
+   <left>
+      <AnchorPane prefWidth="241.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="415.0" fitWidth="241.0" layoutY="-12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@/images/login.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </left>
+
+   <!-- Trung tâm: form đăng ký -->
+   <center>
+      <AnchorPane BorderPane.alignment="CENTER" prefWidth="359.0">
+         <children>
+            <Text layoutX="14.0" layoutY="124.0" text="Email address" />
+            <Text layoutX="14.0" layoutY="163.0" text="Username" />
+            <Text layoutX="14.0" layoutY="205.0" text="Password" />
+            <Text layoutX="14.0" layoutY="249.0" text="Repeat Password" />
+
+            <TextField fx:id="emailField" layoutX="121.0" layoutY="107.0" prefWidth="186.0" />
+            <TextField fx:id="usernameField" layoutX="121.0" layoutY="146.0" prefWidth="186.0" />
+            <PasswordField fx:id="passwordField" layoutX="121.0" layoutY="188.0" prefWidth="186.0" />
+            <PasswordField fx:id="repeatPasswordField" layoutX="121.0" layoutY="232.0" prefWidth="186.0" />
+
+            <Button fx:id="signinButton" layoutX="77.0" layoutY="286.0"
+                    prefWidth="214.0" style="-fx-background-color: #b9d8fc;"
+                    text="Sign in" onAction="#handleSignIn" />
+
+            <Text layoutX="103.0" layoutY="343.0" text="You have Account?" />
+            <Button fx:id="loginButton" layoutX="222.0" layoutY="326.0"
+                    prefWidth="69.0" style="-fx-background-color: #b9d8fc;"
+                    text="Login" onAction="#switchToLogin" />
+
+            <Text layoutX="104.0" layoutY="71.0" text="Sign in">
+               <font><Font name="Arial Bold" size="36.0" /></font>
+            </Text>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>
