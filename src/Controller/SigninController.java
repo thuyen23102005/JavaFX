@@ -18,22 +18,24 @@ public class SigninController {
 
     @FXML private TextField emailField;
     @FXML private TextField usernameField;
+    @FXML private TextField phonenumField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField repeatPasswordField;
 
-    // Cấu hình cơ sở dữ liệu
-    private final String DB_URL = "jdbc:mysql://localhost:3306/Store"; // Thay bằng tên CSDL thực tế
+    // Thông tin kết nối CSDL
+    private final String DB_URL = "jdbc:mysql://localhost:3306/Store";
     private final String DB_USER = "root";
-    private final String DB_PASSWORD = "123456"; // Nhập mật khẩu nếu có
+    private final String DB_PASSWORD = "123456";
 
     @FXML
     private void handleSignIn(ActionEvent event) {
-        String email = emailField.getText();
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-        String confirm = repeatPasswordField.getText();
+        String email = emailField.getText().trim();
+        String username = usernameField.getText().trim();
+        String phone = phonenumField.getText().trim();
+        String password = passwordField.getText().trim();
+        String confirm = repeatPasswordField.getText().trim();
 
-        if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+        if (email.isEmpty() || username.isEmpty() || phone.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
             showAlert(AlertType.WARNING, "Vui lòng nhập đầy đủ thông tin!");
             return;
         }
@@ -43,7 +45,7 @@ public class SigninController {
             return;
         }
 
-        if (insertUser(email, username, password)) {
+        if (insertUser(email, username, phone, password)) {
             showAlert(AlertType.INFORMATION, "Đăng ký thành công!");
             clearFields();
         } else {
@@ -51,24 +53,24 @@ public class SigninController {
         }
     }
 
-    private boolean insertUser(String email, String username, String password) {
+    private boolean insertUser(String email, String username, String phone, String password) {
         String sql = "INSERT INTO Customer (NameCus, PhoneCus, EmailCus, UserName, Password) VALUES (?, ?, ?, ?, ?)";
 
-    try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setString(1, username);           // Giả định NameCus là username
-        stmt.setString(2, "0000000000");       // Chưa có input Phone nên gán tạm
-        stmt.setString(3, email);
-        stmt.setString(4, username);
-        stmt.setString(5, password);
+            stmt.setString(1, username);   
+            stmt.setString(2, phone);      // Số điện thoại người dùng nhập
+            stmt.setString(3, email);
+            stmt.setString(4, username);
+            stmt.setString(5, password);
 
-        int rows = stmt.executeUpdate();
-        return rows > 0;
+            int rows = stmt.executeUpdate();
+            return rows > 0;
 
         } catch (SQLException e) {
-           e.printStackTrace();
-           return false;
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -77,7 +79,6 @@ public class SigninController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Login.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Login");
@@ -97,6 +98,7 @@ public class SigninController {
     private void clearFields() {
         emailField.clear();
         usernameField.clear();
+        phonenumField.clear();
         passwordField.clear();
         repeatPasswordField.clear();
     }

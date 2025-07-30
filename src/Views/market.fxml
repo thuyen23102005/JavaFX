@@ -15,9 +15,10 @@
         <VBox spacing="10" style="-fx-background-color: #1f6073;" alignment="TOP_CENTER">
             <padding><Insets top="20" left="10" right="10" bottom="10"/></padding>
             <Label text="🛒 Market" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
-            <Label text="Welcome, Admin111" style="-fx-text-fill: white;"/>
-            <Button text="Danh sách sản phẩm" prefWidth="140"/>
-            <Button text="Thông Tin Cá Nhân" prefWidth="140"/>
+            <Label fx:id="lblWelcome" text="Welcome, ..." style="-fx-text-fill: white;"/>
+            <Button fx:id="btnProducts" text="Danh sách sản phẩm" prefWidth="140"/>
+            <Button fx:id="btnProfile" text="Thông Tin Cá Nhân" prefWidth="140" onAction="#onProfile"/>
+            <Button fx:id="btnAddSP" text="Thêm Sản Phẩm" prefWidth="140" onAction="#onAddSP"/>
             <Button fx:id="btnLogin" text="Đăng Xuất" onAction="#onLogin" prefWidth="140"/>
         </VBox>
     </left>

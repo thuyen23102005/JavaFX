@@ -27,28 +27,34 @@
    <center>
       <AnchorPane BorderPane.alignment="CENTER" prefWidth="359.0">
          <children>
-            <Text layoutX="14.0" layoutY="124.0" text="Email address" />
-            <Text layoutX="14.0" layoutY="163.0" text="Username" />
-            <Text layoutX="14.0" layoutY="205.0" text="Password" />
-            <Text layoutX="14.0" layoutY="249.0" text="Repeat Password" />
-
-            <TextField fx:id="emailField" layoutX="121.0" layoutY="107.0" prefWidth="186.0" />
-            <TextField fx:id="usernameField" layoutX="121.0" layoutY="146.0" prefWidth="186.0" />
-            <PasswordField fx:id="passwordField" layoutX="121.0" layoutY="188.0" prefWidth="186.0" />
-            <PasswordField fx:id="repeatPasswordField" layoutX="121.0" layoutY="232.0" prefWidth="186.0" />
-
-            <Button fx:id="signinButton" layoutX="77.0" layoutY="286.0"
-                    prefWidth="214.0" style="-fx-background-color: #b9d8fc;"
-                    text="Sign in" onAction="#handleSignIn" />
-
-            <Text layoutX="103.0" layoutY="343.0" text="You have Account?" />
-            <Button fx:id="loginButton" layoutX="222.0" layoutY="326.0"
-                    prefWidth="69.0" style="-fx-background-color: #b9d8fc;"
-                    text="Login" onAction="#switchToLogin" />
-
+            <!-- Tiêu đề -->
             <Text layoutX="104.0" layoutY="71.0" text="Sign in">
                <font><Font name="Arial Bold" size="36.0" /></font>
             </Text>
+
+            <!-- Label -->
+            <Text layoutX="14.0" layoutY="124.0" text="Email address" />
+            <Text layoutX="14.0" layoutY="164.0" text="Username" />
+            <Text layoutX="14.0" layoutY="204.0" text="Phone Number" />
+            <Text layoutX="14.0" layoutY="244.0" text="Password" />
+            <Text layoutX="14.0" layoutY="284.0" text="Repeat Password" />
+
+            <!-- TextField -->
+            <TextField fx:id="emailField" layoutX="121.0" layoutY="107.0" prefWidth="186.0" />
+            <TextField fx:id="usernameField" layoutX="121.0" layoutY="147.0" prefWidth="186.0" />
+            <TextField fx:id="phonenumField" layoutX="121.0" layoutY="187.0" prefWidth="186.0" />
+            <PasswordField fx:id="passwordField" layoutX="121.0" layoutY="227.0" prefWidth="186.0" />
+            <PasswordField fx:id="repeatPasswordField" layoutX="121.0" layoutY="267.0" prefWidth="186.0" />
+
+            <!-- Nút và liên kết -->
+            <Button fx:id="signinButton" layoutX="77.0" layoutY="310.0"
+                    prefWidth="214.0" style="-fx-background-color: #b9d8fc;"
+                    text="Sign in" onAction="#handleSignIn" />
+
+            <Text layoutX="103.0" layoutY="361.0" text="You have Account?" />
+            <Button fx:id="loginButton" layoutX="222.0" layoutY="345.0"
+                    prefWidth="69.0" style="-fx-background-color: #b9d8fc;"
+                    text="Login" onAction="#switchToLogin" />
          </children>
       </AnchorPane>
    </center>

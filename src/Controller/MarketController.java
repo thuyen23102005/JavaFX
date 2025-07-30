@@ -1,28 +1,27 @@
 package Controller;
 
 import java.io.IOException;
-import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import model.Product;
-import java.util.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import java.sql.SQLException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import Main.Myconnection;
+import java.sql.Statement;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
 import model.CartItem;
 
 public class MarketController {
@@ -35,6 +34,12 @@ public class MarketController {
     @FXML private Label lblTotal;
 
     private ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
+    
+    @FXML private Label lblWelcome;
+    
+    public void setCustomerName(String name) {
+    lblWelcome.setText("Welcome, " + name);
+    }
     
     @FXML
     private void initialize() {
@@ -86,14 +91,35 @@ public class MarketController {
         e.printStackTrace();
        }
     }
-
+    
+    @FXML private Button btnProfile;
+    
     @FXML
-    private void onCheckout() {
-        double total = 0;
-    for (CartItem item : cartItems) {
-        total += item.getTotal();
-    }
+    private void onProfile() {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Profile.fxml"));
+        Parent root = loader.load();
 
+        ProfileController controller = loader.getController();
+        controller.setCustomerId(currentCustomerId);
+
+        Stage stage = (Stage) btnProfile.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Thông tin cá nhân");
+        stage.show();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+  }
+    
+    public void setCurrentCustomerId(int id) {
+    this.currentCustomerId = id;
+    }
+    
+    private int currentCustomerId;
+    
+   @FXML
+   private void onCheckout() {
     if (cartItems.isEmpty()) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Cảnh báo");
@@ -104,19 +130,77 @@ public class MarketController {
         return;
     }
 
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle("Thanh toán thành công");
-    alert.setHeaderText(null); // Ẩn dòng phân cách
+    try (Connection conn = Myconnection.getConnection()) {
+        conn.setAutoCommit(false); // Bắt đầu transaction
 
-    alert.setContentText(String.format("Cảm ơn bạn đã mua hàng!\nBạn đã thanh toán: %.0f ₫", total));
-    alert.getDialogPane().setStyle("-fx-font-size: 18px; -fx-font-family: 'Arial';");
+        // 1. Thêm vào OrderPro
+        String insertOrder = "INSERT INTO OrderPro (DateOrder, IDCus, AddressDeliverry) VALUES (?, ?, ?)";
+        PreparedStatement orderStmt = conn.prepareStatement(insertOrder, Statement.RETURN_GENERATED_KEYS);
+        orderStmt.setDate(1, new java.sql.Date(System.currentTimeMillis()));
+        orderStmt.setInt(2, currentCustomerId); // ID khách hàng (hiện đang gán cố định)
+        orderStmt.setString(3, "Địa chỉ mặc định"); // sau này bạn có thể thêm giao diện nhập địa chỉ
+        orderStmt.executeUpdate();
 
-    alert.showAndWait();
-    cartItems.clear();
-    updateTotal();
+        // 2. Lấy ID đơn hàng vừa tạo
+        ResultSet rs = orderStmt.getGeneratedKeys();
+        int orderId = -1;
+        if (rs.next()) {
+            orderId = rs.getInt(1);
+        } else {
+            throw new SQLException("Không thể lấy ID của đơn hàng.");
+        }
+
+        // 3. Thêm chi tiết vào OrderDetail
+        String insertDetail = "INSERT INTO OrderDetail (IDProduct, IDOrder, Quantity, UnitPrice) VALUES (?, ?, ?, ?)";
+        PreparedStatement detailStmt = conn.prepareStatement(insertDetail);
+
+        for (CartItem item : cartItems) {
+            detailStmt.setInt(1, item.getProduct().getProductID());
+            detailStmt.setInt(2, orderId);
+            detailStmt.setInt(3, item.getQuantity());
+            detailStmt.setDouble(4, item.getProduct().getPrice());
+            detailStmt.addBatch();
+        }
+
+        detailStmt.executeBatch(); // Thêm tất cả 1 lần
+        conn.commit(); // Thành công => commit
+
+        // 4. Hiển thị thông báo và xóa giỏ hàng
+        double total = getTotal();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thanh toán thành công");
+        alert.setHeaderText(null);
+        alert.setContentText(String.format("Cảm ơn bạn đã mua hàng!\nBạn đã thanh toán: %.0f ₫", total));
+        alert.getDialogPane().setStyle("-fx-font-size: 18px; -fx-font-family: 'Arial';");
+        alert.showAndWait();
+
+        cartItems.clear();
+        updateTotal();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        showAlert(Alert.AlertType.ERROR, "Lỗi khi thanh toán: " + e.getMessage());
     }
+   } 
+   
+   @FXML
+    private void onAddSP() {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Pro_Crud.fxml"));
+        Parent root = loader.load();
 
-    @FXML
+        Stage stage = new Stage();
+        stage.setTitle("Thêm / Sửa / Xóa Sản phẩm");
+        stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.show();
+    } catch (IOException e) {
+        e.printStackTrace();
+        showAlert(Alert.AlertType.ERROR, "Không thể mở cửa sổ Thêm Sản phẩm!");
+    }
+   }
+
+   @FXML
     private void onClearCart() {
         CartItem selected = tableCart.getSelectionModel().getSelectedItem();
         if (selected != null) {
@@ -151,4 +235,19 @@ public class MarketController {
     }
     lblTotal.setText(String.format("Tổng tiền: %.0f ₫", total));
   }
+    private double getTotal() {
+        double total = 0;
+        for (CartItem item : cartItems) {
+          total += item.getTotal();
+        }
+        return total;
+    }
+
+    private void showAlert(Alert.AlertType type, String message) {
+       Alert alert = new Alert(type);
+       alert.setTitle("Thông báo");
+       alert.setHeaderText(null);
+       alert.setContentText(message);
+       alert.showAndWait();
+    }
 }

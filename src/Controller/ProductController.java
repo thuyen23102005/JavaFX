@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
-/**
- *
- * @author thuyen
- */
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -38,8 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import javafx.stage.FileChooser;
-import java.io.File;
 
 public class ProductController implements Initializable {
     @FXML private TextField txtNamePro, txtDescription, txtCateID, txtPrice, txtImage;
@@ -62,6 +52,18 @@ public class ProductController implements Initializable {
         colImage.setCellValueFactory(cellData -> new javafx.beans.property.ReadOnlyObjectWrapper<>(cellData.getValue().getImageView()));
         
         loadProducts();
+
+        // Đổ dữ liệu khi click chọn dòng trong bảng
+        tableProduct.setOnMouseClicked(event -> {
+            Product selected = tableProduct.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                txtNamePro.setText(selected.getNamePro());
+                txtDescription.setText(selected.getDecriptionPro());
+                txtCateID.setText(String.valueOf(selected.getCateID()));
+                txtPrice.setText(String.valueOf(selected.getPrice()));
+                txtImage.setText(selected.getImagePro());
+            }
+        });
     }
 
     private void loadProducts() {
@@ -85,37 +87,73 @@ public class ProductController implements Initializable {
 
     @FXML 
     private void handleAdd() {
-        String sql = "INSERT INTO Product(NamePro, DecriptionPro, CateID, Price, ImagePro) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = Myconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, txtNamePro.getText());
-            ps.setString(2, txtDescription.getText());
-            ps.setInt(3, Integer.parseInt(txtCateID.getText()));
-            ps.setDouble(4, Double.parseDouble(txtPrice.getText()));
-            ps.setString(5, txtImage.getText());
+        String name = txtNamePro.getText().trim();
+        String desc = txtDescription.getText().trim();
+        String cateStr = txtCateID.getText().trim();
+        String priceStr = txtPrice.getText().trim();
+        String image = txtImage.getText().trim();
+
+        if (name.isEmpty() || desc.isEmpty() || cateStr.isEmpty() || priceStr.isEmpty()) {
+            System.out.println("Vui lòng nhập đầy đủ thông tin.");
+            return;
+        }
+
+        try (Connection conn = Myconnection.getConnection()) {
+            String sql = "INSERT INTO Product(NamePro, DecriptionPro, CateID, Price, ImagePro) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, desc);
+            ps.setInt(3, Integer.parseInt(cateStr));
+            ps.setDouble(4, Double.parseDouble(priceStr));
+            ps.setString(5, image);
             ps.executeUpdate();
+
             loadProducts();
             handleClear();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (NumberFormatException ex) {
+            System.out.println("CateID hoặc Price không hợp lệ.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML 
     private void handleUpdate() {
         Product selected = tableProduct.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        String sql = "UPDATE Product SET NamePro=?, DecriptionPro=?, CateID=?, Price=?, ImagePro=? WHERE ProductID=?";
-        try (Connection conn = Myconnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, txtNamePro.getText());
-            ps.setString(2, txtDescription.getText());
-            ps.setInt(3, Integer.parseInt(txtCateID.getText()));
-            ps.setDouble(4, Double.parseDouble(txtPrice.getText()));
-            ps.setString(5, txtImage.getText());
+        if (selected == null) {
+            System.out.println("Chưa chọn sản phẩm để cập nhật.");
+            return;
+        }
+
+        String name = txtNamePro.getText().trim();
+        String desc = txtDescription.getText().trim();
+        String cateStr = txtCateID.getText().trim();
+        String priceStr = txtPrice.getText().trim();
+        String image = txtImage.getText().trim();
+
+        if (name.isEmpty() || desc.isEmpty() || cateStr.isEmpty() || priceStr.isEmpty()) {
+            System.out.println("Vui lòng nhập đầy đủ thông tin.");
+            return;
+        }
+
+        try (Connection conn = Myconnection.getConnection()) {
+            String sql = "UPDATE Product SET NamePro=?, DecriptionPro=?, CateID=?, Price=?, ImagePro=? WHERE ProductID=?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, desc);
+            ps.setInt(3, Integer.parseInt(cateStr));
+            ps.setDouble(4, Double.parseDouble(priceStr));
+            ps.setString(5, image);
             ps.setInt(6, selected.getProductID());
             ps.executeUpdate();
+
             loadProducts();
             handleClear();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (NumberFormatException ex) {
+            System.out.println("CateID hoặc Price không hợp lệ.");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @FXML 
@@ -147,23 +185,17 @@ public class ProductController implements Initializable {
         );
 
         File selectedFile = fileChooser.showOpenDialog(null);
-    if (selectedFile == null) return;
+        if (selectedFile == null) return;
 
-    try {
-        // Tạo thư mục images nếu chưa có
-        Path destDir = Paths.get("Images");
-        Files.createDirectories(destDir);
-
-        // Copy file vào thư mục Images
-        Path src  = selectedFile.toPath();
-        Path dest = destDir.resolve(selectedFile.getName());
-        Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
-
-        // Lưu đường dẫn tuyệt đối (hoặc tương đối tuỳ bạn muốn)
-        txtImage.setText(dest.toAbsolutePath().toString());
-
+        try {
+            Path destDir = Paths.get("Images");
+            Files.createDirectories(destDir);
+            Path src  = selectedFile.toPath();
+            Path dest = destDir.resolve(selectedFile.getName());
+            Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+            txtImage.setText(dest.toAbsolutePath().toString());
         } catch (Exception ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 }
